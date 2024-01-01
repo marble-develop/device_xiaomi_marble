@@ -181,19 +181,36 @@ BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := odm product system system_ext vendor vendor_dlkm
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 9659482112
 
-$(foreach p, $(call to-upper, $(BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST)), \
-    $(eval BOARD_$(p)IMAGE_FILE_SYSTEM_TYPE := ext4) \
-    $(eval BOARD_$(p)IMAGE_PARTITION_RESERVED_SIZE := 104857600) \
-    $(eval TARGET_COPY_OUT_$(p) := $(call to-lower, $(p))))
-
 BOARD_PARTITION_LIST := $(call to-upper, $(BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST))
 $(foreach p, $(BOARD_PARTITION_LIST), $(eval BOARD_$(p)IMAGE_FILE_SYSTEM_TYPE := ext4))
+
+ifneq ($(WITH_GMS),true)
+BOARD_PRODUCTIMAGE_EXTFS_INODE_COUNT ?= -1
+ifeq ($(PRODUCT_VIRTUAL_AB_OTA),true)
+BOARD_PRODUCTIMAGE_PARTITION_RESERVED_SIZE ?= 1188036608
+else
+BOARD_PRODUCTIMAGE_PARTITION_RESERVED_SIZE ?= 1957691392
+endif
+BOARD_SYSTEMIMAGE_EXTFS_INODE_COUNT ?= -1
+BOARD_SYSTEMIMAGE_PARTITION_RESERVED_SIZE ?= 1258291200
+BOARD_SYSTEM_EXTIMAGE_EXTFS_INODE_COUNT ?= -1
+BOARD_SYSTEM_EXTIMAGE_PARTITION_RESERVED_SIZE ?= 629145600
+endif
 
 TARGET_COPY_OUT_ODM := odm
 TARGET_COPY_OUT_PRODUCT := product
 TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 TARGET_COPY_OUT_VENDOR := vendor
 TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
+
+# Platform
+BOARD_USES_QCOM_HARDWARE := true
+TARGET_BOARD_PLATFORM := taro
+
+# Disable sparse on all filesystem images
+TARGET_USERIMAGES_SPARSE_EROFS_DISABLED := true
+TARGET_USERIMAGES_SPARSE_EXT_DISABLED := true
+TARGET_USERIMAGES_SPARSE_F2FS_DISABLED := true
 
 # Platform
 BOARD_USES_QCOM_HARDWARE := true
@@ -248,7 +265,7 @@ DEVICE_MANIFEST_UKEE_FILES := \
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \
     $(DEVICE_PATH)/configs/vintf/vendor_framework_compatibility_matrix.xml \
     $(DEVICE_PATH)/configs/vintf/xiaomi_framework_compatibility_matrix.xml \
-    vendor/aosp/config/device_framework_matrix.xml
+    vendor/leaf/config/device_framework_matrix.xml
 ODM_MANIFEST_SKUS += marble
 ODM_MANIFEST_MARBLE_FILES := $(DEVICE_PATH)/configs/vintf/manifest_nfc.xml
 
