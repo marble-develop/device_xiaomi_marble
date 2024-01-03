@@ -26,7 +26,7 @@ TARGET_INCLUDE_YOUTUBE := false
 PRODUCT_BRAND := Xiaomi
 PRODUCT_DEVICE := marble
 PRODUCT_MANUFACTURER := Xiaomi
-PRODUCT_NAME := lineage_marble
+PRODUCT_NAME := leaf_marble
 
 # GMS
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
